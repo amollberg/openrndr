@@ -354,6 +354,14 @@ internal class SVGPath : SVGElement() {
     }
 
     fun parseDrawAttributes(e: Element) {
+        fun withAlpha(color: CompositionColor, alphaValue: Double) =
+                color.let {
+                    when (it) {
+                        is Color -> Color(it.color?.copy(a = alphaValue))
+                        else -> stroke
+                    }
+                }
+
         if (e.hasAttr("fill")) {
             fill = Color(parseColor(e.attr("fill")))
         }
@@ -363,6 +371,12 @@ internal class SVGPath : SVGElement() {
         }
         strokeWeight = e.attr("stroke-width").let {
             if (it.isEmpty()) null else it.toDouble()
+        }
+
+        var alpha = 1.0
+        // Set the alpha channel based on stroke-opacity
+        if (e.hasAttr("stroke-opacity")) {
+            alpha = e.attr("stroke-opacity").toDouble()
         }
 
         e.attr("style").split(";").forEach {
@@ -379,8 +393,10 @@ internal class SVGPath : SVGElement() {
                 "fill" -> fill = Color(parseColor(value()))
                 "stroke" -> stroke = Color(parseColor(value()))
                 "stroke-width" -> strokeWeight = value().toDouble()
+                "stroke-opacity" -> alpha = value().toDouble()
             }
         }
+        stroke = withAlpha(stroke, alpha)
     }
 }
 
