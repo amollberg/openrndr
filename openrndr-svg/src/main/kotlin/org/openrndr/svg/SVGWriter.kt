@@ -41,10 +41,15 @@ fun writeSVG(composition: Composition): String {
                     }
                     val strokeWidthAttribute = strokeWeight.let { if (it is StrokeWeight) "stroke-width=\"${it.weight}\"" else "" }
 
+                    val strokeOpacityAttribute = stroke.let {
+                        if (it is Color) it.color?.let {
+                            "stroke-opacity=\"${it.a}\"" } else ""
+                    }
+
                     val transformAttribute = if (transform !== Matrix44.IDENTITY) "transform=\"${transform.svg}\"" else ""
 
                     val pathAttribute = "d=\"${shape.svg}\""
-                    sb.append("<path $transformAttribute $fillAttribute $strokeAttribute $strokeWidthAttribute $pathAttribute/>\n")
+                    sb.append("<path $transformAttribute $fillAttribute $strokeAttribute $strokeWidthAttribute $strokeOpacityAttribute $pathAttribute/>\n")
                 }
 
                 is TextNode -> {
