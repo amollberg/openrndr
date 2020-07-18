@@ -393,6 +393,8 @@ internal class SVGDocument(private val root: SVGElement) {
             ShapeNode(e.shape()).apply {
                 fill = e.fill
                 stroke = e.stroke
+                strokeWeight = e.strokeWeight?.let { StrokeWeight(it) }
+                        ?: InheritStrokeWeight
                 this.id = e.id
             }
         }
